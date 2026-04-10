@@ -1,0 +1,64 @@
+### Register user
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "Password123!",
+  "preferences": ["Ficción", "Ciencia"],
+  "annualGoal": 12
+}
+
+### Login
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "Password123!"
+}
+
+### Search books (set env var token)
+# After login use the response token value in the authorization header example.
+GET http://localhost:8080/api/books/search?q=9780262033848
+Authorization: Bearer {{token}}
+
+### Create book
+POST http://localhost:8080/api/books
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "isbn": "9780262033848",
+  "title": "Design Patterns",
+  "authors": ["Erich Gamma", "Richard Helm", "Ralph Johnson", "John Vlissides"],
+  "description": "Classic book",
+  "thumbnail": "https://example.com/cover.jpg",
+  "status": "DESEADO",
+  "rating": 5
+}
+
+### Update status
+PATCH http://localhost:8080/api/books/{{bookId}}/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "LEYENDO"
+}
+
+### Create loan
+POST http://localhost:8080/api/loans
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "bookId": {{bookId}},
+  "contactName": "Amigo",
+  "loanDate": "2026-03-26",
+  "dueDate": "2026-04-10"
+}
+
+### Dashboard
+GET http://localhost:8080/api/stats/dashboard
+Authorization: Bearer {{token}}

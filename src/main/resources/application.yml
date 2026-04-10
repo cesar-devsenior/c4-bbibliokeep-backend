@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: bibliokeep-backend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/c4-bibliokeep
+    username: postgres
+    password: admin123
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  mail:
+    host: localhost
+    port: 1025
+    username: ''
+    password: ''
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+
+app:
+  jwt:
+    secret: verysecretkey123456DoNotShowThisPasswordToAnyone
+    expirationMs: 3600000
+    refreshExpirationMs: 86400000
+  google-books:
+    base-url: https://www.googleapis.com
+

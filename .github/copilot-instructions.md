@@ -1,0 +1,30 @@
+# Reglas de Comportamiento para MediCare API (Backend)
+
+You are an expert in Java 21, Spring Boot 4, and Modern REST API development.
+
+## Code Style & Standards
+- **Java 25 Modern Features**: 
+  - ALWAYS use `var` for local variables to improve readability.
+  - Use Records (`record`) for all DTOs and immutable data carriers.
+  - Use Pattern Matching for `switch` and `instanceof`.
+  - Use Text Blocks (`"""`) for SQL queries or JSON strings inside code.
+- **Lombok Usage**: Aggressively use `@Data`, `@RequiredArgsConstructor`, and `@Builder` to minimize boilerplate code.
+- **Dependency Injection**: PREFER **Constructor Injection** via `@RequiredArgsConstructor`. AVOID field injection (`@Autowired` on fields is forbidden).
+- **Collections**: Always use immutable factory methods: `List.of()`, `Set.of()`, `Map.of()`.
+
+## Spring Boot 4 Best Practices
+- **HTTP Client**: Use `RestClient` (the modern, fluent API) instead of the legacy `RestTemplate` or reactive `WebClient` (unless specifically doing streaming).
+- **Security**: Use Spring Security 6+ Lambda DSL configuration (e.g., `.authorizeHttpRequests(auth -> ...)`). Avoid extending `WebSecurityConfigurerAdapter`.
+- **Validation**: Use `jakarta.validation` annotations (`@NotNull`, `@Email`, `@PastOrPresent`, etc.) strictly in DTOs, never in Entities.
+- **Error Handling**: Implement global handling using `@ControllerAdvice` and strict `ProblemDetails` format (RFC 7807).
+
+## Architecture & Layers
+- Flow: Controller -> Service Interface -> Service Implementation -> Repository.
+- **Separation of Concerns**: NEVER put business logic in Controllers. Controllers should only handle HTTP request/response mapping.
+- **Data Exposure**: Always return DTOs. NEVER return JPA Entities directly to the client to prevent infinite recursion and leakage of internal schema.
+- **Mappers**: Use MapStruct mappers to map DTOs to JPA Entities and viceversa.
+
+## Testing Strategy
+- Use JUnit 5 and AssertJ for fluent assertions.
+- Use `@MockBean` for mocking dependencies in integration tests.
+- Prefer `Testcontainers` for database integration tests.

@@ -1,12 +1,9 @@
 package com.devsenior.cdiaz.bibliokeep.service.impl;
 
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.devsenior.cdiaz.bibliokeep.client.GoogleBooksClient;
@@ -19,12 +16,12 @@ import com.devsenior.cdiaz.bibliokeep.model.entity.BookStatus;
 import com.devsenior.cdiaz.bibliokeep.repository.BookRepository;
 import com.devsenior.cdiaz.bibliokeep.repository.UserRepository;
 import com.devsenior.cdiaz.bibliokeep.service.BookService;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class BookServiceImpl implements BookService {
@@ -35,7 +32,7 @@ public class BookServiceImpl implements BookService {
     private final UserRepository userRepository;
     private final BookMapper bookMapper;
     private final GoogleBooksClient googleBooksClient;
-    private final StringRedisTemplate redisTemplate;
+    // private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -68,6 +65,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookResponse> searchBooks(String query, UUID ownerId) {
+        log.info("Query: {}; OwnerId: {}", query, ownerId);
         var normalizedQ = query == null ? "" : query.strip();
 
         if (normalizedQ.isEmpty()) {
@@ -80,14 +78,14 @@ public class BookServiceImpl implements BookService {
                 return List.of(bookMapper.toResponse(localBook.get()));
             }
 
-            var cached = getCachedBookResponses("isbn:" + normalizedQ);
-            if (!cached.isEmpty()) {
-                return cached;
-            }
+            // var cached = getCachedBookResponses("isbn:" + normalizedQ);
+            // if (!cached.isEmpty()) {
+            //     return cached;
+            // }
 
-            var googleBooks = googleBooksClient.searchByIsbn(normalizedQ);
-            cacheBookResponses("isbn:" + normalizedQ, googleBooks);
-            return googleBooks;
+            // var googleBooks = googleBooksClient.searchByIsbn(normalizedQ);
+            // cacheBookResponses("isbn:" + normalizedQ, googleBooks);
+            // return googleBooks;
         }
 
         var searchResult = getLocalBooks(ownerId, normalizedQ);
@@ -95,15 +93,17 @@ public class BookServiceImpl implements BookService {
             return searchResult;
         }
 
-        var cacheKey = "search:" + normalizedQ.toLowerCase();
-        var cached = getCachedBookResponses(cacheKey);
-        if (!cached.isEmpty()) {
-            return cached;
-        }
+        // var cacheKey = "search:" + normalizedQ.toLowerCase();
+        // var cached = getCachedBookResponses(cacheKey);
+        // if (!cached.isEmpty()) {
+        //     return cached;
+        // }
 
-        var googleBooks = googleBooksClient.searchByQuery(normalizedQ);
-        cacheBookResponses(cacheKey, googleBooks);
-        return googleBooks;
+        // var googleBooks = googleBooksClient.searchByQuery(normalizedQ);
+        // cacheBookResponses(cacheKey, googleBooks);
+        // return googleBooks;
+
+        return List.of();
     }
 
     private List<BookResponse> getLocalBooks(UUID ownerId) {
@@ -127,28 +127,28 @@ public class BookServiceImpl implements BookService {
         return term.matches("^(?:\\d{10}|\\d{13})$");
     }
 
-    private List<BookResponse> getCachedBookResponses(String key) {
-        var cachedJson = redisTemplate.opsForValue().get(key);
-        if (cachedJson == null) {
-            return Collections.emptyList();
-        }
-        try {
-            return Arrays.asList(objectMapper.readValue(cachedJson, BookResponse[].class));
-        } catch (JsonProcessingException e) {
-            return Collections.emptyList();
-        }
-    }
+    // private List<BookResponse> getCachedBookResponses(String key) {
+    //     var cachedJson = redisTemplate.opsForValue().get(key);
+    //     if (cachedJson == null) {
+    //         return Collections.emptyList();
+    //     }
+    //     try {
+    //         return Arrays.asList(objectMapper.readValue(cachedJson, BookResponse[].class));
+    //     } catch (JsonProcessingException e) {
+    //         return Collections.emptyList();
+    //     }
+    // }
 
-    private void cacheBookResponses(String key, List<BookResponse> responses) {
-        if (responses == null || responses.isEmpty()) {
-            return;
-        }
+    // private void cacheBookResponses(String key, List<BookResponse> responses) {
+    //     if (responses == null || responses.isEmpty()) {
+    //         return;
+    //     }
 
-        try {
-            var json = objectMapper.writeValueAsString(responses);
-            redisTemplate.opsForValue().set(key, json, CACHE_TTL);
-        } catch (JsonProcessingException e) {
-            // swallow cache serialization errors intentionally
-        }
-    }
+    //     try {
+    //         var json = objectMapper.writeValueAsString(responses);
+    //         redisTemplate.opsForValue().set(key, json, CACHE_TTL);
+    //     } catch (JsonProcessingException e) {
+    //         // swallow cache serialization errors intentionally
+    //     }
+    // }
 }

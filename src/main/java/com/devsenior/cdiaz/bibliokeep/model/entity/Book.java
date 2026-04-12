@@ -31,7 +31,6 @@ public class Book {
     @Column(name = "author")
     private List<String> authors;
 
-    @Lob
     private String description;
 
     private String thumbnail;

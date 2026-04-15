@@ -36,4 +36,8 @@ app:
     refreshExpirationMs: 86400000
   google-books:
     base-url: https://www.googleapis.com
+  file:
+    directory: ./files/upload
+    publish-path: /public
+    cache-period: 3600
 

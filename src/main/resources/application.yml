@@ -28,6 +28,10 @@ spring:
           auth: false
           starttls:
             enable: false
+  servlet:
+    multipart:
+      max-file-size: 15MB
+      max-request-size: 16MB
 
 app:
   jwt:

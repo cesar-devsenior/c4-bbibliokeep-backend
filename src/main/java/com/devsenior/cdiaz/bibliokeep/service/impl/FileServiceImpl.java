@@ -45,6 +45,9 @@ public class FileServiceImpl implements FileService {
             // Copiar el contenido del archivo a un archivo a un nuevo archivo en la carpeta
             var originalFileName = file.getOriginalFilename();
             var extension = originalFileName.substring(originalFileName.lastIndexOf('.') + 1);
+            if(extension.equals("blob")) {
+                extension = "webp";
+            }
             var filename = String.format("%s.%s", UUID.randomUUID().toString(), extension);
             Files.copy(file.getInputStream(), directory.resolve(filename));
 

@@ -31,9 +31,9 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
     private final BookMapper bookMapper;
-    private final GoogleBooksClient googleBooksClient;
+    // private final GoogleBooksClient googleBooksClient;
     // private final StringRedisTemplate redisTemplate;
-    private final ObjectMapper objectMapper;
+    // private final ObjectMapper objectMapper;
 
     @Override
     public BookResponse createBook(BookRequest request, UUID ownerId) {

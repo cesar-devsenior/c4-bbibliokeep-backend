@@ -1,7 +1,8 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '4.0.5'
+	id 'org.springframework.boot' version '4.0.6'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'jacoco'
 }
 
 group = 'com.devsenior.cdiaz'
@@ -59,4 +60,60 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport
 }
+
+def jacocoExcludes = [
+	'com/devsenior/cdiaz/bibliokeep/config/**',
+	'com/devsenior/cdiaz/bibliokeep/dto/**',
+	'com/devsenior/cdiaz/bibliokeep/exception/**',
+	'com/devsenior/cdiaz/bibliokeep/model/**',
+	'com/devsenior/cdiaz/bibliokeep/mapper/**',
+	'com/devsenior/cdiaz/bibliokeep/repository/**',
+	'com/devsenior/cdiaz/bibliokeep/security/**',
+	'com/devsenior/cdiaz/bibliokeep/*Application*'
+]
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml.required = true
+		html.required = true
+	}
+
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: jacocoExcludes)
+		}))
+	}
+}
+
+jacocoTestCoverageVerification {
+	dependsOn test
+
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: jacocoExcludes)
+		}))
+	}
+	
+	violationRules {
+		rule {
+			element = 'PACKAGE'
+			limit {
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
+				minimum = 0.80
+			}
+			limit {
+				counter = 'BRANCH'
+				value = 'COVEREDRATIO'
+				minimum = 0.70
+			}
+		}
+	}
+}
+
+check.dependsOn jacocoTestCoverageVerification
+
+bootJar.dependsOn check

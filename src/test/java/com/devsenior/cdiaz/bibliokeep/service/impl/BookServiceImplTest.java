@@ -13,7 +13,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import com.devsenior.cdiaz.bibliokeep.exception.BadRequestException;
 import com.devsenior.cdiaz.bibliokeep.exception.ResourceNotFoundException;
@@ -25,8 +28,6 @@ import com.devsenior.cdiaz.bibliokeep.model.entity.BookStatus;
 import com.devsenior.cdiaz.bibliokeep.model.entity.User;
 import com.devsenior.cdiaz.bibliokeep.repository.BookRepository;
 import com.devsenior.cdiaz.bibliokeep.repository.UserRepository;
-
-import lombok.var;
 
 class BookServiceImplTest {
 
@@ -135,6 +136,180 @@ class BookServiceImplTest {
         // Assert
         assertNotNull(result);
         assertEquals(BookStatus.LEIDO, result.status());
+    }
+
+    @Test
+    void shouldThrowResourceNotFoundException_WhenBookNotExist() {
+        // Arrange
+        var mockedId = 1L;
+        var ownerId = mockedOwnerId();
+
+        when(bookRepositoryMock.findById(mockedId))
+                .thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class,
+                () -> bookService.updateBookStatus(mockedId, BookStatus.LEIDO, ownerId));
+    }
+
+    @Test
+    void shouldReturnBookList_WhenQueryIsEmpty() {
+        // Arrange
+        var query = "";
+        var ownerId = mockedOwnerId();
+
+        var book1 = new Book();
+        var book2 = new Book();
+        when(bookRepositoryMock.findByOwnerId(ownerId))
+                .thenReturn(List.of(book1, book2));
+
+        var response1 = mockedBookResponse();
+        when(bookMapperMock.toResponse(any(Book.class)))
+                .thenReturn(response1);
+
+        // Act
+        var result = bookService.searchBooks(query, ownerId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void shouldReturnBookList_WhenQueryIsNull() {
+        // Arrange
+        String query = null;
+        var ownerId = mockedOwnerId();
+
+        var book1 = new Book();
+        var book2 = new Book();
+        when(bookRepositoryMock.findByOwnerId(ownerId))
+                .thenReturn(List.of(book1, book2));
+
+        var response1 = mockedBookResponse();
+        when(bookMapperMock.toResponse(any(Book.class)))
+                .thenReturn(response1);
+
+        // Act
+        var result = bookService.searchBooks(query, ownerId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+    }
+
+    @DisplayName("Should return book list when query is valid and found books")
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "   java    ",
+            "   JAVA    ",
+            "   JaVa    ",
+            "6",
+            "   diaz    "})
+    void shouldReturnBookList_WhenQueryIsValid(String query) {
+        // Arrange
+        var ownerId = mockedOwnerId();
+
+        var book1 = new Book();
+        book1.setIsbn("123456");
+        book1.setTitle("Java Programming");
+        book1.setAuthors(List.of("Cesar Diaz"));
+        var book2 = new Book();
+        book2.setIsbn("987654");
+        book2.setTitle("Advanced Java");
+        book2.setAuthors(List.of("Cesar Diaz"));
+        when(bookRepositoryMock.findByOwnerId(ownerId))
+                .thenReturn(List.of(book1, book2));
+
+        var response1 = mockedBookResponse();
+        when(bookMapperMock.toResponse(any(Book.class)))
+                .thenReturn(response1);
+
+        // Act
+        var result = bookService.searchBooks(query, ownerId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+    }
+
+    @DisplayName("Should return empty book list when query is valid but not found books")
+    @Test
+    void shouldReturnBookList_WhenQueryIsDiazAndNotFoundBooks() {
+        // Arrange
+        var query = "   Augusto    ";
+        var ownerId = mockedOwnerId();
+
+        var book1 = new Book();
+        book1.setIsbn("123456");
+        book1.setTitle("Java Programming");
+        book1.setAuthors(List.of("Cesar Diaz"));
+        var book2 = new Book();
+        book2.setIsbn("987654");
+        book2.setTitle("Advanced Java");
+        book2.setAuthors(List.of("Cesar Diaz"));
+        when(bookRepositoryMock.findByOwnerId(ownerId))
+                .thenReturn(List.of(book1, book2));
+
+        // Act
+        var result = bookService.searchBooks(query, ownerId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(0, result.size());
+    }
+
+
+    @DisplayName("""
+            Escenario: El usuario busca libros con una consulta válida pero no se encuentran libros que coincidan con la consulta.
+                Dado que el usuario tiene libros en su colección
+                Cuando el usuario realiza una búsqueda con una consulta que no coincide con ningún libro
+                Entonces el sistema devuelve una lista vacía de libros
+            """)
+    @Test
+    void shouldReturnBookList_WhenQueryIsValidISBNAndFoundBook() {
+        // Arrange
+        var query = "1234567890";
+        var ownerId = mockedOwnerId();
+
+        var book1 = new Book();
+        book1.setIsbn("1234567890");
+        book1.setTitle("Java Programming");
+        book1.setAuthors(List.of("Cesar Diaz"));
+        when(bookRepositoryMock.findByOwnerIdAndIsbn(ownerId, query))
+                .thenReturn(Optional.of(book1));
+
+        var response1 = mockedBookResponse();
+        when(bookMapperMock.toResponse(any(Book.class)))
+                .thenReturn(response1);
+
+        // Act
+        var result = bookService.searchBooks(query, ownerId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void shouldReturnBookList_WhenQueryIsValidISBNAndNotFoundBook() {
+        // Arrange
+        var query = "1234567890";
+        var ownerId = mockedOwnerId();
+
+        when(bookRepositoryMock.findByOwnerIdAndIsbn(ownerId, query))
+                .thenReturn(Optional.empty());
+
+        var response1 = mockedBookResponse();
+        when(bookMapperMock.toResponse(any(Book.class)))
+                .thenReturn(response1);
+
+        // Act
+        var result = bookService.searchBooks(query, ownerId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(0, result.size());
     }
 
     private BookRequest mockedBookRequest() {

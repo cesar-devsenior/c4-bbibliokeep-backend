@@ -47,7 +47,7 @@ public class BookController {
 
     @PatchMapping("/{id}/status")
     @ResponseStatus(HttpStatus.OK)
-    public BookResponse updateStatus(@PathVariable Long id,
+    public BookResponse updateStatus(@PathVariable("id") Long id,
                                                      @Valid @RequestBody BookStatusUpdateRequest request) {
         var ownerId = getCurrentUserId();
         return bookService.updateBookStatus(id, request.status(), ownerId);

@@ -1,3 +1,11 @@
 ###
 GET http://localhost:8080/api/books/search
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjNTdhZGYyYi1iMDY3LTRkMTMtOGU2ZC0xYTdhNzQ2NTFkYjEiLCJpYXQiOjE3NzU3ODYzODQsImV4cCI6MTc3NTc4OTk4NH0.tkjjkzAuZMkRmo0L2YvGflAHdgJz4F42MCin9GriqAQ
+
+###
+PATCH http://localhost:8080/api/books/1/status
+Authorization: Bearer eyJ
+
+{
+    "status": "COMPRADO"
+}

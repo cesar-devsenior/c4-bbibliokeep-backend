@@ -1,15 +1,19 @@
 package com.devsenior.cdiaz.bibliokeep.model.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Builder
 @Entity
 @Table(name = "books", indexes = @Index(name = "idx_book_isbn", columnList = "isbn"))
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Book {
 
     @Id
@@ -35,12 +39,14 @@ public class Book {
 
     private String thumbnail;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BookStatus status = BookStatus.DESEADO;
 
     private Integer rating;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean isLent = false;
 }

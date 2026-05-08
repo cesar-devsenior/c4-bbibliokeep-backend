@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.devsenior.cdiaz.bibliokeep.client.GoogleBooksClient;
 import com.devsenior.cdiaz.bibliokeep.exception.BadRequestException;
 import com.devsenior.cdiaz.bibliokeep.exception.ResourceNotFoundException;
 import com.devsenior.cdiaz.bibliokeep.mapper.BookMapper;
@@ -16,7 +15,6 @@ import com.devsenior.cdiaz.bibliokeep.model.entity.BookStatus;
 import com.devsenior.cdiaz.bibliokeep.repository.BookRepository;
 import com.devsenior.cdiaz.bibliokeep.repository.UserRepository;
 import com.devsenior.cdiaz.bibliokeep.service.BookService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

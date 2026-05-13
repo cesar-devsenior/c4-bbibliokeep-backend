@@ -103,28 +103,4 @@ public class BookServiceImpl implements BookService {
         return term.matches("^(?:\\d{10}|\\d{13})$");
     }
 
-    // private List<BookResponse> getCachedBookResponses(String key) {
-    //     var cachedJson = redisTemplate.opsForValue().get(key);
-    //     if (cachedJson == null) {
-    //         return Collections.emptyList();
-    //     }
-    //     try {
-    //         return Arrays.asList(objectMapper.readValue(cachedJson, BookResponse[].class));
-    //     } catch (JsonProcessingException e) {
-    //         return Collections.emptyList();
-    //     }
-    // }
-
-    // private void cacheBookResponses(String key, List<BookResponse> responses) {
-    //     if (responses == null || responses.isEmpty()) {
-    //         return;
-    //     }
-
-    //     try {
-    //         var json = objectMapper.writeValueAsString(responses);
-    //         redisTemplate.opsForValue().set(key, json, CACHE_TTL);
-    //     } catch (JsonProcessingException e) {
-    //         // swallow cache serialization errors intentionally
-    //     }
-    // }
 }

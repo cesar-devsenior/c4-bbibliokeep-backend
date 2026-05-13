@@ -29,9 +29,6 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
     private final BookMapper bookMapper;
-    // private final GoogleBooksClient googleBooksClient;
-    // private final StringRedisTemplate redisTemplate;
-    // private final ObjectMapper objectMapper;
 
     @Override
     public BookResponse createBook(BookRequest request, UUID ownerId) {
@@ -75,31 +72,12 @@ public class BookServiceImpl implements BookService {
             if (localBook.isPresent()) {
                 return List.of(bookMapper.toResponse(localBook.get()));
             }
-
-            // var cached = getCachedBookResponses("isbn:" + normalizedQ);
-            // if (!cached.isEmpty()) {
-            //     return cached;
-            // }
-
-            // var googleBooks = googleBooksClient.searchByIsbn(normalizedQ);
-            // cacheBookResponses("isbn:" + normalizedQ, googleBooks);
-            // return googleBooks;
         }
 
         var searchResult = getLocalBooks(ownerId, normalizedQ);
         if (!searchResult.isEmpty()) {
             return searchResult;
         }
-
-        // var cacheKey = "search:" + normalizedQ.toLowerCase();
-        // var cached = getCachedBookResponses(cacheKey);
-        // if (!cached.isEmpty()) {
-        //     return cached;
-        // }
-
-        // var googleBooks = googleBooksClient.searchByQuery(normalizedQ);
-        // cacheBookResponses(cacheKey, googleBooks);
-        // return googleBooks;
 
         return List.of();
     }

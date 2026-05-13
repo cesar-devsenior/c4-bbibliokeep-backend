@@ -30,8 +30,8 @@ spring:
             enable: false
   servlet:
     multipart:
-      max-file-size: 15MB
-      max-request-size: 16MB
+      max-file-size: 8MB
+      max-request-size: 8MB
 
 app:
   jwt:

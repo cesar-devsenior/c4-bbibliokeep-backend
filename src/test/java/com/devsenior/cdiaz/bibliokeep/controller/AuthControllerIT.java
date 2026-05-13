@@ -117,6 +117,7 @@ class AuthControllerIT {
 
             @Override
             public void describeTo(Description description) {
+                // No se necesita una descripción detallada para este matcher
             }
         };
     }
